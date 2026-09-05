@@ -3,195 +3,285 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>La Aventura de Bri y Kitty</title>
+    <title>Video Interactivo: La Aventura de Bri y Kitty</title>
     <style>
         :root {
-            --primary-color: #2c3e50;
-            --accent-color: #2980b9;
-            --bg-gradient: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-            --card-bg: #ffffff;
+            --bg-color: #0f172a;
+            --player-bg: #1e293b;
+            --accent-color: #38bdf8;
+            --text-color: #f8fafc;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: var(--bg-gradient);
-            color: var(--primary-color);
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
             margin: 0;
-            padding: 20px;
+            padding: 0;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
         }
 
-        .container {
+        .video-player-container {
             width: 100%;
-            max-width: 800px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+            max-width: 900px;
+            background: var(--player-bg);
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
             overflow: hidden;
             display: flex;
             flex-direction: column;
-            animation: fadeIn 0.8s ease-in-out;
+            border: 1px solid #334155;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(15px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .image-container {
+        /* Simulador de pantalla de video */
+        .screen-frame {
+            position: relative;
             width: 100%;
-            height: 420px;
-            background-color: #e2e8f0;
+            height: 480px;
+            background-color: #000;
+            overflow: hidden;
+        }
+
+        .screen-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        .screen-frame img.fade-out {
+            opacity: 0;
+        }
+
+        /* Barra superior tipo reproductor (Título de Capítulo) */
+        .video-header {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to bottom, rgba(0,0,0,0.8) 0%, rgba(0,0,0,0) 100%);
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .video-header h2 {
+            margin: 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #fff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .live-badge {
+            background-color: #ef4444;
+            color: white;
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        /* Panel de opciones interactivas flotantes (Superpuestas al video) */
+        .interactive-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(to top, rgba(15, 23, 42, 0.95) 0%, rgba(15, 23, 42, 0.7) 70%, rgba(15, 23, 42, 0) 100%);
+            padding: 30px 20px 20px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            z-index: 10;
+        }
+
+        .story-dialogue {
+            font-size: 1.05rem;
+            line-height: 1.5;
+            margin: 0;
+            color: #e2e8f0;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+        }
+
+        .choices-box {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .choice-btn {
+            background: rgba(56, 189, 248, 0.15);
+            border: 1px solid var(--accent-color);
+            color: #fff;
+            padding: 12px 18px;
+            border-radius: 8px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            backdrop-filter: blur(5px);
+            font-weight: 500;
+        }
+
+        .choice-btn:hover {
+            background: var(--accent-color);
+            color: #0f172a;
+            transform: scale(1.01);
+            box-shadow: 0 0 15px rgba(56, 189, 248, 0.4);
+        }
+
+        .restart-btn {
+            background: rgba(34, 197, 94, 0.2);
+            border-color: #22c55e;
+        }
+        .restart-btn:hover {
+            background: #22c55e;
+            color: #fff;
+            box-shadow: 0 0 15px rgba(34, 197, 94, 0.4);
+        }
+
+        /* Barra de control inferior estilo reproductor */
+        .player-controls {
+            background-color: #0f172a;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #94a3b8;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 4px;
+            background: #334155;
+            margin: 0 20px;
+            border-radius: 2px;
             overflow: hidden;
             position: relative;
         }
 
-        .image-container img {
-            width: 100%;
+        .progress-fill {
+            width: 25%;
             height: 100%;
-            object-fit: cover;
-            transition: transform 0.6s ease;
-        }
-
-        .image-container img:hover {
-            transform: scale(1.02);
-        }
-
-        .content {
-            padding: 30px;
-            display: flex;
-            flex-direction: column;
-            gap: 18px;
-        }
-
-        h2 {
-            margin: 0;
-            font-size: 1.7rem;
-            color: #1b4f72;
-            border-bottom: 2px solid #ebf5fb;
-            padding-bottom: 10px;
-        }
-
-        p {
-            font-size: 1.15rem;
-            line-height: 1.7;
-            margin: 0;
-            color: #4a5568;
-        }
-
-        .choices {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-top: 10px;
-        }
-
-        button {
-            background-color: var(--accent-color);
-            color: white;
-            border: none;
-            padding: 14px 22px;
-            border-radius: 10px;
-            font-size: 1.05rem;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
-            text-align: left;
-            box-shadow: 0 4px 10px rgba(41, 128, 185, 0.2);
-        }
-
-        button:hover {
-            background-color: #1f618d;
-            transform: translateY(-2px);
-            box-shadow: 0 6px 15px rgba(41, 128, 185, 0.3);
-        }
-
-        .restart-btn {
-            background-color: #27ae60;
-            text-align: center;
-            box-shadow: 0 4px 10px rgba(39, 174, 96, 0.2);
-        }
-        .restart-btn:hover {
-            background-color: #219653;
-            box-shadow: 0 6px 15px rgba(39, 174, 96, 0.3);
+            background: var(--accent-color);
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <div class="container">
-        <div class="image-container">
-            <img id="story-image" src="" alt="Escena de la historia">
+    <div class="video-player-container">
+        <div class="screen-frame">
+            <div class="video-header">
+                <h2 id="video-title">Capítulo 1: El Bosque de Tulipanes Azules</h2>
+                <span class="live-badge">Interactivo</span>
+            </div>
+
+            <img id="video-screen" src="" alt="Fotograma de la historia">
+
+            <div class="interactive-overlay">
+                <p id="video-dialogue" class="story-dialogue">Cargando escena...</p>
+                <div id="choices-box" class="choices-box">
+                    </div>
+            </div>
         </div>
-        <div class="content">
-            <h2 id="story-title">Título del Capítulo</h2>
-            <p id="story-text">Texto de la historia...</p>
-            <div id="choices-container" class="choices">
-                </div>
+
+        <div class="player-controls">
+            <span id="scene-counter">Escena 1 de 4</span>
+            <div class="progress-bar">
+                <div id="progress-fill" class="progress-fill" style="width: 25%;"></div>
+            </div>
+            <span>HD • Interactivo</span>
         </div>
     </div>
 
     <script>
-        const storyData = {
+        const videoData = {
             inicio: {
                 title: "Capítulo 1: El Bosque de Tulipanes Azules",
-                text: "Bri, con su cabello lacio, lentes modernos, su chaqueta de cuero y su gata tricolor Kitty a su lado, camina sonriendo por un sendero mágico flanqueado por tulipanes azules y blancos. Un pergamino brillante aguarda al final.",
+                dialogue: "Bri camina sonriendo por el sendero del bosque mágico con su cabello lacio, lentes modernos, su chaqueta de cuero y su gata Kitty al lado. Un pergamino brillante aparece.",
                 image: "https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1200&q=80",
+                progress: "25%",
+                counter: "Escena 1 de 4",
                 choices: [
-                    { text: "Abrir el pergamino para continuar la aventura", next: "santuario" }
+                    { text: "▶ Reproducir siguiente pista (Abrir pergamino)", next: "santuario" }
                 ]
             },
             santuario: {
                 title: "Capítulo 2: El Enigma del Santuario",
-                text: "Guiadas por el mapa, llegan frente a un antiguo arco de piedra cubierto de runas brillantes. La puerta tiene huecos con forma de flor y Kitty mira a Bri con atención.",
+                dialogue: "Llegan frente al antiguo arco de piedra con runas brillantes. La puerta gigante exige una elección y Kitty mira fijamente a Bri.",
                 image: "https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80",
+                progress: "50%",
+                counter: "Escena 2 de 4",
                 choices: [
-                    { text: "Opción A: Colocar tulipanes azules reales en los huecos", next: "postre" },
-                    { text: "Opción B: Pedirle a Kitty que active la runa secreta con su patita", next: "postre" }
+                    { text: "⚡ Opción A: Colocar tulipanes azules reales en los huecos", next: "postre" },
+                    { text: "⚡ Opción B: Pedirle a Kitty que active la runa secreta", next: "postre" }
                 ]
             },
             postre: {
                 title: "Capítulo 3: El Claro del Postre Mágico",
-                text: "¡La puerta se abre y revela un claro secreto! Sobre un altar de piedra iluminado descansa un brillante y delicioso cheesecake de maracuyá fresco. Bri lo señala emocionada y Kitty da saltitos de alegría.",
+                dialogue: "¡La puerta se abre! Sobre un altar de piedra iluminado descansa el brillante cheesecake de maracuyá fresco. Bri lo señala emocionada.",
                 image: "https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=1200&q=80",
+                progress: "75%",
+                counter: "Escena 3 de 4",
                 choices: [
-                    { text: "Compartir el primer trozo con Kitty y avanzar hacia la costa", next: "playa" }
+                    { text: "▶ Compartir con Kitty y avanzar hacia la costa", next: "playa" }
                 ]
             },
             playa: {
                 title: "Capítulo 4: El Atardecer en la Playa",
-                text: "El camino final las lleva a una hermosa costa dorada al atardecer. Bri se sienta cómodamente en la arena con Kitty acurrucada en su regazo, contemplando las olas. ¡Gracias por hacer cada día una aventura mágica!",
+                dialogue: "El viaje concluye frente al mar al atardecer. Bri descansa en la arena con Kitty en su regazo. ¡Gracias por hacer cada día una aventura mágica!",
                 image: "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
+                progress: "100%",
+                counter: "Escena 4 de 4",
                 choices: [
-                    { text: "Volver a empezar la aventura", next: "inicio" }
+                    { text: "↺ Volver a reproducir la aventura desde el inicio", next: "inicio", isRestart: true }
                 ]
             }
         };
 
-        function showScene(sceneKey) {
-            const scene = storyData[sceneKey];
-            document.getElementById("story-title").innerText = scene.title;
-            document.getElementById("story-text").innerText = scene.text;
-            document.getElementById("story-image").src = scene.image;
+        function loadScene(sceneKey) {
+            const scene = videoData[sceneKey];
+            const imgElement = document.getElementById("video-screen");
 
-            const choicesContainer = document.getElementById("choices-container");
-            choicesContainer.innerHTML = "";
+            // Efecto de transición de video (fade)
+            imgElement.classList.add("fade-out");
 
-            scene.choices.forEach(choice => {
-                const button = document.createElement("button");
-                button.innerText = choice.text;
-                if(sceneKey === 'playa') {
-                    button.classList.add('restart-btn');
-                }
-                button.onclick = () => showScene(choice.next);
-                choicesContainer.appendChild(button);
-            });
+            setTimeout(() => {
+                document.getElementById("video-title").innerText = scene.title;
+                document.getElementById("video-dialogue").innerText = scene.dialogue;
+                imgElement.src = scene.image;
+                document.getElementById("progress-fill").style.width = scene.progress;
+                document.getElementById("scene-counter").innerText = scene.counter;
+
+                const choicesBox = document.getElementById("choices-box");
+                choicesBox.innerHTML = "";
+
+                scene.choices.forEach(choice => {
+                    const button = document.createElement("button");
+                    button.className = "choice-btn";
+                    if(choice.isRestart) button.classList.add("restart-btn");
+                    button.innerText = choice.text;
+                    button.onclick = () => loadScene(choice.next);
+                    choicesBox.appendChild(button);
+                });
+
+                imgElement.classList.remove("fade-out");
+            }, 300);
         }
 
-        showScene("inicio");
+        // Iniciar reproductor en la primera escena
+        loadScene("inicio");
     </script>
 </body>
 </html>
