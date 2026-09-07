@@ -3,265 +3,290 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Videojuego: La Aventura de Bri y Kitty</title>
+    <title>Bri & Kitty - Bosque de Tulipanes</title>
     <style>
-        :root {
-            --bg-color: #090d16;
-            --player-bg: #111827;
-            --accent-color: #38bdf8;
-            --text-color: #f8fafc;
-            --hud-bg: rgba(15, 23, 42, 0.92);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        body {
-            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            margin: 0;
-            padding: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            box-sizing: border-box;
+        body, html {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        /* Contenedor del Video de Fondo */
+        .video-background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            object-fit: cover;
+            z-index: -1;
         }
 
         .game-container {
-            width: 100%;
-            max-width: 850px;
-            background: var(--player-bg);
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.8);
-            overflow: hidden;
+            position: relative;
+            width: 100vw;
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            border: 2px solid #1e293b;
+            justify-content: space-between;
+            padding: 20px;
         }
 
-        .game-screen {
-            position: relative;
-            width: 100%;
-            height: 420px;
-            background-color: #000;
-            overflow: hidden;
-        }
-
-        .game-screen img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            position: absolute;
-            top: 0;
-            left: 0;
-            opacity: 0;
-            transition: opacity 0.5s ease-in-out;
-        }
-
-        .game-screen img.active {
-            opacity: 1;
-            z-index: 1;
-        }
-
-        .game-hud {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            background: linear-gradient(to bottom, rgba(0,0,0,0.95) 0%, rgba(0,0,0,0) 100%);
-            padding: 15px 20px;
+        /* Barra Superior */
+        .top-bar {
             display: flex;
             justify-content: space-between;
             align-items: center;
+            width: 100%;
             z-index: 10;
         }
 
         .game-title {
-            margin: 0;
+            background: rgba(0, 0, 0, 0.6);
+            color: #f3e5ab;
+            padding: 8px 16px;
+            border-radius: 8px;
             font-size: 1.1rem;
-            font-weight: 800;
-            color: #38bdf8;
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            text-shadow: 0 2px 5px rgba(0,0,0,0.9);
-        }
-
-        .inventory-badge {
-            background-color: rgba(56, 189, 248, 0.15);
-            border: 1px solid var(--accent-color);
-            color: #38bdf8;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            font-weight: 700;
-            backdrop-filter: blur(5px);
-        }
-
-        .game-dialogue-box {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: var(--hud-bg);
-            backdrop-filter: blur(10px);
-            border-top: 2px solid rgba(56, 189, 248, 0.4);
-            padding: 25px 20px 20px 20px;
+            border: 1px solid rgba(243, 229, 171, 0.3);
             display: flex;
-            flex-direction: column;
-            gap: 15px;
-            z-index: 10;
-        }
-
-        .dialogue-text {
-            font-size: 1.05rem;
-            line-height: 1.6;
-            margin: 0;
-            color: #e2e8f0;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.95);
-            font-weight: 500;
-        }
-
-        .choices-grid {
-            display: flex;
-            flex-direction: column;
+            align-items: center;
             gap: 10px;
         }
 
+        .location {
+            font-size: 0.85rem;
+            color: #d1d1d1;
+            margin-top: 4px;
+        }
+
+        .top-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .icon-btn {
+            background: rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(243, 229, 171, 0.3);
+            color: #f3e5ab;
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background 0.2s;
+        }
+
+        .icon-btn:hover {
+            background: rgba(243, 229, 171, 0.2);
+        }
+
+        /* Área Inferior */
+        .bottom-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            width: 100%;
+            z-index: 10;
+            gap: 20px;
+        }
+
+        /* Estadísticas */
+        .stats-box {
+            background: rgba(0, 0, 0, 0.75);
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(243, 229, 171, 0.3);
+            width: 200px;
+            margin-bottom: 10px;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            flex-grow: 1;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: #f3e5ab;
+            width: 50%;
+            transition: width 0.3s ease;
+        }
+
+        /* Caja de Diálogo */
+        .dialogue-box {
+            background: rgba(20, 18, 15, 0.85);
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 20px;
+            flex-grow: 1;
+            max-width: 550px;
+            position: relative;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+        }
+
+        .speaker-name {
+            color: #f3e5ab;
+            font-weight: bold;
+            font-size: 1.1rem;
+            margin-bottom: 8px;
+            font-style: italic;
+        }
+
+        .dialogue-text {
+            color: #f9f6ee;
+            font-size: 1rem;
+            line-height: 1.5;
+            min-height: 50px;
+        }
+
+        /* Opciones de Elección */
+        .choices-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 320px;
+            margin-bottom: 10px;
+        }
+
         .choice-btn {
-            background: linear-gradient(135deg, rgba(30, 41, 59, 0.95) 0%, rgba(15, 23, 42, 0.95) 100%);
-            border: 2px solid #475569;
-            color: #f8fafc;
+            background: rgba(20, 18, 15, 0.85);
+            border: 1px solid #d4af37;
+            color: #f3e5ab;
             padding: 12px 18px;
             border-radius: 10px;
-            font-size: 1rem;
             cursor: pointer;
-            transition: all 0.3s ease;
             text-align: left;
-            font-weight: 700;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
         .choice-btn:hover {
-            background: var(--accent-color);
-            color: #0f172a;
-            border-color: var(--accent-color);
-            transform: translateX(5px);
-            box-shadow: 0 5px 15px rgba(56, 189, 248, 0.5);
-        }
-
-        .restart-btn {
-            background: linear-gradient(135deg, rgba(22, 101, 52, 0.95) 0%, rgba(20, 83, 45, 0.95) 100%);
-            border-color: #166534;
-        }
-        .restart-btn:hover {
-            background: #22c55e;
-            border-color: #22c55e;
-            box-shadow: 0 5px 15px rgba(34, 197, 94, 0.5);
-        }
-
-        .game-footer {
-            background-color: #060910;
-            padding: 8px 20px;
-            text-align: right;
-            font-size: 0.75rem;
-            color: #4b5563;
+            background: rgba(212, 175, 55, 0.25);
+            border-color: #fff;
+            transform: translateX(-5px);
         }
     </style>
 </head>
 <body>
 
+    <video class="video-background" autoplay muted loop playsinline>
+        <source src="fondo_bri.mp4" type="video/mp4">
+        Tu navegador no soporta videos HTML5.
+    </video>
+
     <div class="game-container">
-        <div class="game-screen">
-            <div class="game-hud">
-                <h2 id="hud-chapter" class="game-title">Capítulo 1</h2>
-                <div id="hud-inventory" class="inventory-badge">🎒 Inventario: Vacío</div>
+        <div class="top-bar">
+            <div>
+                <div class="game-title">
+                    <span>Bri & Kitty 🐾</span>
+                    <span style="font-size: 0.8rem; opacity: 0.8;">V3</span>
+                </div>
+                <div class="location" id="locationText">📍 Bosque de Tulipanes</div>
             </div>
-
-            <img id="img-inicio" class="active" src="https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=1200&q=80" alt="Capítulo 1">
-            <img id="img-santuario" src="https://images.unsplash.com/photo-1519681393784-d120267933ba?auto=format&fit=crop&w=1200&q=80" alt="Capítulo 2">
-            <img id="img-postre" src="https://images.unsplash.com/photo-1533134242443-d4fd215305ad?auto=format&fit=crop&w=1200&q=80" alt="Capítulo 3">
-            <img id="img-playa" src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80" alt="Capítulo 4">
-
-            <div class="game-dialogue-box">
-                <p id="game-dialogue" class="dialogue-text">Cargando motor de juego...</p>
-                <div id="choices-container" class="choices-grid"></div>
+            <div class="top-buttons">
+                <button class="icon-btn" title="Pausa">⏸</button>
+                <button class="icon-btn" title="Configuración">⚙</button>
+                <button class="icon-btn" title="Historial">📖</button>
             </div>
         </div>
 
-        <div class="game-footer">
-            <span>Motor de Videojuego Interactivo • HTML5 / JS</span>
+        <div class="bottom-section">
+            <div class="stats-box">
+                <div class="stat-row">
+                    <span>🐾</span>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="affectionBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="dialogue-box">
+                <div class="speaker-name" id="speakerName">Bri</div>
+                <div class="dialogue-text" id="dialogueText">Qué lugar tan increíble, Kitty... Parece sacado de un sueño. ¿Vamos a explorar un poco?</div>
+            </div>
+
+            <div class="choices-container" id="choicesContainer">
+                <button class="choice-btn" onclick="selectChoice(1)">
+                    <span>🌷</span> Seguir el sendero de tulipanes
+                </button>
+                <button class="choice-btn" onclick="selectChoice(2)">
+                    <span>⛰</span> Subir hacia la colina
+                </button>
+                <button class="choice-btn" onclick="selectChoice(3)">
+                    <span>✨</span> Buscar el claro mágico
+                </button>
+            </div>
         </div>
     </div>
 
     <script>
-        const gameData = {
-            inicio: {
-                chapter: "Capítulo 1: El Bosque de Tulipanes",
-                dialogue: "Bri camina sonriendo por el sendero del bosque mágico con su cabello lacio, lentes modernos, chaqueta de cuero y Kitty a su lado. Un pergamino brillante aparece.",
-                image: "img-inicio",
-                inventory: "🎒 Inventario: Mapa Mágico",
-                choices: [
-                    { text: "👉 Examinar el pergamino y avanzar al Santuario", next: "santuario" }
-                ]
-            },
-            santuario: {
-                chapter: "Capítulo 2: El Enigma del Santuario",
-                dialogue: "Llegan frente al antiguo arco de piedra con runas brillantes. La puerta gigante exige una elección. Kitty mira fijamente a Bri esperando una orden.",
-                image: "img-santuario",
-                inventory: "🎒 Inventario: Pista del Santuario",
-                choices: [
-                    { text: "✨ Opción A: Colocar tulipanes azules reales en los huecos", next: "postre" },
-                    { text: "🐾 Opción B: Pedirle a Kitty que active la runa secreta", next: "postre" }
-                ]
-            },
-            postre: {
-                chapter: "Capítulo 3: El Claro del Postre Mágico",
-                dialogue: "¡La puerta se abre con destellos! Sobre un altar de piedra iluminado descansa un brillante cheesecake de maracuyá fresco. Bri lo señala emocionada.",
-                image: "img-postre",
-                inventory: "🍰 Inventario: Cheesecake de Maracuyá",
-                choices: [
-                    { text: "🌊 Compartir con Kitty y avanzar hacia la costa final", next: "playa" }
-                ]
-            },
-            playa: {
-                chapter: "Capítulo 4: El Atardecer en la Playa",
-                dialogue: "El viaje concluye frente al mar al atardecer. Bri descansa en la arena con Kitty en su regazo, disfrutando la brisa. ¡Aventura completada con éxito!",
-                image: "img-playa",
-                inventory: "🏆 Inventario: Aventura Completada",
-                choices: [
-                    { text: "🔄 Volver a jugar desde el inicio", next: "inicio", isRestart: true }
-                ]
-            }
-        };
+        let affection = 50;
 
-        function changeScene(sceneKey) {
-            const scene = gameData[sceneKey];
-
-            // Ocultar todas las imágenes y mostrar solo la activa
-            document.querySelectorAll('.game-screen img').forEach(img => {
-                img.classList.remove('active');
-            });
-            document.getElementById(scene.image).classList.add('active');
-
-            // Actualizar interfaz HUD y texto
-            document.getElementById("hud-chapter").innerText = scene.chapter;
-            document.getElementById("hud-inventory").innerText = scene.inventory;
-            document.getElementById("game-dialogue").innerText = scene.dialogue;
-
-            // Renderizar botones de opciones
-            const choicesContainer = document.getElementById("choices-container");
-            choicesContainer.innerHTML = "";
-
-            scene.choices.forEach(choice => {
-                const button = document.createElement("button");
-                button.className = "choice-btn";
-                if(choice.isRestart) button.classList.add("restart-btn");
-                button.innerText = choice.text;
-                button.onclick = () => changeScene(choice.next);
-                choicesContainer.appendChild(button);
-            });
+        function updateAffection(amount) {
+            affection = Math.max(0, Math.min(100, affection + amount));
+            document.getElementById('affectionBar').style.width = affection + '%';
         }
 
-        // Iniciar el videojuego
-        changeScene("inicio");
+        function selectChoice(option) {
+            const speaker = document.getElementById('speakerName');
+            const dialogue = document.getElementById('dialogueText');
+            const choices = document.getElementById('choicesContainer');
+            const location = document.getElementById('locationText');
+
+            if (option === 1) {
+                location.innerText = "📍 Sendero de Tulipanes Rojos";
+                speaker.innerText = "Bri";
+                dialogue.innerText = "¡Mira cuántos colores, Kitty! La gatita tricolor maúlla contenta y se frota contra ti.";
+                updateAffection(10);
+            } else if (option === 2) {
+                location.innerText = "📍 Colina del Mirador";
+                speaker.innerText = "Bri";
+                dialogue.innerText = "Desde aquí arriba el castillo se ve majestuoso. Kitty observa con atención las torres lejanas.";
+                updateAffection(5);
+            } else if (option === 3) {
+                location.innerText = "📍 Claro Mágico del Bosque";
+                speaker.innerText = "Bri";
+                dialogue.innerText = "Hay un brillo mágico flotando en el aire. ¡Kitty da un pequeño salto emocionada!";
+                updateAffection(15);
+            }
+
+            choices.innerHTML = `
+                <button class="choice-btn" onclick="resetGame()">
+                    <span>🔄</span> Volver al inicio
+                </button>
+            `;
+        }
+
+        function resetGame() {
+            location.reload();
+        }
     </script>
 </body>
 </html>
